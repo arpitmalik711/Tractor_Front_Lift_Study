@@ -9,12 +9,13 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --mud:      #2C2416;
-      --soil:     #5C3D1E;
-      --straw:    #C9A84C;
-      --haze:     #E8DFC8;
-      --offwhite: #F5F1E8;
-      --rule:     rgba(92,61,30,0.18);
+      --mud:      #2E3524;
+      --soil:     #47502F;
+      --straw:    #8A9B4F;
+      --haze:     #D7DFC3;
+      --offwhite: #E6EBD9;
+      --field:    #5E6E4A;
+      --rule:     rgba(71,80,47,0.16);
       --px:       clamp(1rem, 5vw, 3rem);
     }
 
@@ -93,6 +94,17 @@
       height: 2px;
       background: var(--straw);
       margin-bottom: 0;
+      position: relative;
+    }
+    .rule::after {
+      content: '';
+      position: absolute;
+      left: 64px;
+      top: -2px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--field);
     }
 
     /* ── SECTION ── */
@@ -577,7 +589,7 @@
 
   <div class="topbar">
     <span class="topbar-label">Static Mechanics · Field Observation</span>
-    <span class="topbar-tag">2025</span>
+    <span class="topbar-tag">Completed · July 2026</span>
   </div>
 
   <div class="hero">
@@ -587,23 +599,42 @@
     <div class="rule"></div>
   </div>
 
+  <div class="section" style="padding-bottom: 1.2rem;">
+    <p class="section-label">Origin</p>
+    <div class="problem-block">
+      <p>
+        As a child, I often watched tractors working in paddy fields. One thing always
+        caught my attention.
+      </p>
+      <p>
+        A tractor carrying a rear-mounted rotavator could work normally inside the field,
+        but while climbing over the irrigation bund to exit, the front suddenly became
+        much lighter.
+      </p>
+      <p>
+        Recently, I came across a reel showing the same behaviour again. It reminded me
+        of that childhood observation and made me ask:
+        <span class="highlight">what actually changes at that instant?</span>
+      </p>
+    </div>
+  </div>
+
   <div class="section">
     <p class="section-label">Problem Statement</p>
     <div class="problem-block">
       <p>
-        A rear-mounted implement tractor moves normally across a paddy field under working load.
-        But the moment its rear tyres climb over the irrigation bund at the field boundary,
-        the front of the tractor becomes visibly light — sometimes lifting entirely off the ground.
+        A rear-mounted implement tractor carries its working load evenly across both axles
+        while inside the field. As the rear tyres climb the bund, the rear contact point
+        shifts forward relative to the tractor's centre of gravity.
       </p>
       <p>
         <span class="highlight">The implement weight does not change. The tractor weight does not change.</span>
-        Yet the front axle reaction drops sharply at that instant.
+        Only the geometry of contact does — and the front axle reaction drops sharply as a result.
       </p>
       <p>
-        This study asks a simple question: what changes at that exact moment?
-        Using moment equilibrium on a simplified static model, it investigates how a shift
-        in the rear tyre contact point — from field level to bund-top — alters the load
-        distribution across the tractor's axles.
+        Using moment equilibrium on a simplified static model, this study quantifies how that
+        shift in rear tyre contact point — from field level to bund-top — redistributes load
+        across the tractor's axles.
       </p>
     </div>
   </div>
@@ -614,7 +645,7 @@
   <div class="section" style="padding-bottom: 0.6rem;">
     <p class="section-label">Field Note</p>
     <p style="max-width:780px; margin:0 auto; padding:0 var(--px) 1rem; font-size:0.92rem; color:var(--mud);">
-      Not a one-off — seen across tractors. Study model uses a third, the Mahindra 265 DI.
+      Not a one-off — seen across tractors. Study model is a fifth, the Mahindra 265 DI.
     </p>
   </div>
   <div class="image-row">
@@ -905,8 +936,8 @@
     <p class="section-label">Step 2 — Loading Scenarios</p>
     <h2 class="step-heading">Case 2 — Rear Tyres on Split Surface</h2>
     <p class="case-desc">
-      Rear tyres rest on the higher field surface while the front tyres remain
-      inside the paddy field.
+      The rear tyres climb onto the irrigation bund, causing the rear support point
+      to shift 421 mm forward.
     </p>
 
     <figure class="img-card img-card--wide" style="margin-bottom: 1.2rem;">
@@ -1173,19 +1204,77 @@
     </ol>
   </div>
 
+  <hr class="section-divider" />
+
+  <!-- FINAL COMPARISON — ALL 3 CASES -->
+  <div class="section" style="padding-bottom: 1.5rem;">
+    <p class="section-label">Final Comparison</p>
+    <h2 class="step-heading">Case 1 vs Case 2 vs Case 2 with Ballast</h2>
+    <p class="case-desc">
+      Bringing all three configurations together — the baseline, the bund-crossing drop,
+      and the recovery achieved with front ballast.
+    </p>
+
+    <figure class="img-card img-card--wide" style="margin-bottom: 1.2rem;">
+      <div class="img-wrap img-wrap--wide">
+        <img src="Case_1_vs_Case_2_vs_Ballast.png" alt="Comparison of front axle load across Case 1, Case 2, and Case 2 with front ballast" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 18</span>
+        Front axle load comparison — Case 1 vs Case 2 vs Case 2 with ballast
+      </figcaption>
+    </figure>
+
+    <div style="margin: 1.4rem 0 1.8rem;">
+      <div style="border: 1px solid var(--rule); border-radius: 3px; overflow: hidden;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; background:var(--haze); border-bottom:1px solid var(--rule);">
+          <div style="padding:0.6rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--straw);">Configuration</div>
+          <div style="padding:0.6rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--straw); border-left:1px solid var(--rule);">Front Axle Load</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--rule);">
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--soil);">Case 1 — Front on higher ground</div>
+          <div style="padding:0.65rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.88rem; color:var(--mud);">5807 N (592 kg)</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--rule);">
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--soil);">Case 2 — Rear on irrigation bund</div>
+          <div style="padding:0.65rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.88rem; color:var(--mud);">1937 N (197 kg)</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr;">
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--soil);">Case 2 — With 108 kg front ballast</div>
+          <div style="padding:0.65rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.88rem; font-weight:500; color:var(--mud);">4930 N (502 kg)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="problem-block">
+      <p>
+        Front ballast recovers most of the front axle load lost during the bund crossing —
+        from <span class="highlight">197 kg back up to 502 kg</span>, an increase of
+        <span class="highlight">2993 N (305 kg)</span> over the original Case 2 — restoring
+        steering control without fully eliminating the drop from the Case 1 baseline of 592 kg.
+      </p>
+    </div>
+  </div>
+
   <div class="sketch-wrap">
     <svg width="280" height="80" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <line x1="0" y1="62" x2="160" y2="62" stroke="#5C3D1E" stroke-width="2"/>
-      <polyline points="160,62 175,38 210,38" stroke="#5C3D1E" stroke-width="2" fill="none"/>
-      <line x1="210" y1="38" x2="280" y2="38" stroke="#5C3D1E" stroke-width="2"/>
-      <rect x="100" y="28" width="72" height="28" rx="3" stroke="#5C3D1E" stroke-width="1.5"/>
-      <rect x="140" y="16" width="28" height="18" rx="2" stroke="#5C3D1E" stroke-width="1.2"/>
-      <line x1="154" y1="16" x2="154" y2="8" stroke="#5C3D1E" stroke-width="1.2"/>
-      <circle cx="112" cy="62" r="10" stroke="#5C3D1E" stroke-width="1.4"/>
-      <circle cx="164" cy="56" r="12" stroke="#5C3D1E" stroke-width="1.4"/>
-      <rect x="168" y="46" width="30" height="14" rx="2" stroke="#5C3D1E" stroke-width="1.2"/>
-      <line x1="168" y1="53" x2="200" y2="53" stroke="#5C3D1E" stroke-width="1"/>
+      <line x1="0" y1="62" x2="160" y2="62" stroke="#47502F" stroke-width="2"/>
+      <polyline points="160,62 175,38 210,38" stroke="#47502F" stroke-width="2" fill="none"/>
+      <line x1="210" y1="38" x2="280" y2="38" stroke="#47502F" stroke-width="2"/>
+      <rect x="100" y="28" width="72" height="28" rx="3" stroke="#47502F" stroke-width="1.5"/>
+      <rect x="140" y="16" width="28" height="18" rx="2" stroke="#47502F" stroke-width="1.2"/>
+      <line x1="154" y1="16" x2="154" y2="8" stroke="#47502F" stroke-width="1.2"/>
+      <circle cx="112" cy="62" r="10" stroke="#47502F" stroke-width="1.4"/>
+      <circle cx="164" cy="56" r="12" stroke="#47502F" stroke-width="1.4"/>
+      <rect x="168" y="46" width="30" height="14" rx="2" stroke="#47502F" stroke-width="1.2"/>
+      <line x1="168" y1="53" x2="200" y2="53" stroke="#47502F" stroke-width="1"/>
     </svg>
+  </div>
+
+  <div style="text-align:center; padding: 0.5rem var(--px) 2.5rem;">
+    <a href="https://arpitmalik711.github.io/Vehicle_system_development_engineer/#casestudies" style="display:inline-flex; align-items:center; gap:0.5rem; background:#E0A020; color:#2E2000; font-family:'IBM Plex Mono',monospace; font-size:0.78rem; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; text-decoration:none; padding:0.75rem 1.6rem; border-radius:4px; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+      ← Back to Portfolio
+    </a>
   </div>
 
   <footer>
