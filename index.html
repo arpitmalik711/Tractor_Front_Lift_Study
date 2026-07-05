@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Front Axle Load Study</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mud:      #2C2416;
+      --soil:     #5C3D1E;
+      --straw:    #C9A84C;
+      --haze:     #E8DFC8;
+      --offwhite: #F5F1E8;
+      --rule:     rgba(92,61,30,0.18);
+      --px:       clamp(1rem, 5vw, 3rem);
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--offwhite);
+      color: var(--mud);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 1.2rem var(--px);
+      border-bottom: 1px solid var(--rule);
+    }
+    .topbar-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: clamp(0.55rem, 2vw, 0.7rem);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--soil);
+      opacity: 0.7;
+    }
+    .topbar-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--straw);
+      border: 1px solid var(--straw);
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: clamp(2.5rem, 8vw, 5rem) var(--px) 3rem;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+    .eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: clamp(0.58rem, 2vw, 0.65rem);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--straw);
+      margin-bottom: 1.2rem;
+    }
+    .study-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.18;
+      color: var(--mud);
+      margin-bottom: 0.6rem;
+    }
+    .study-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+      color: var(--soil);
+      margin-bottom: 2.4rem;
+      opacity: 0.8;
+    }
+    .rule {
+      width: 56px;
+      height: 2px;
+      background: var(--straw);
+      margin-bottom: 0;
+    }
+
+    /* ── SECTION ── */
+    .section {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 var(--px) 3.5rem;
+    }
+    .section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--straw);
+      margin-bottom: 1rem;
+    }
+    .section-divider {
+      max-width: 780px;
+      margin: 0 auto 2.5rem;
+      padding: 0 var(--px);
+      border: none;
+      border-top: 1px solid var(--rule);
+    }
+
+    /* ── PROBLEM BLOCK ── */
+    .problem-block {
+      border-left: 3px solid var(--straw);
+      padding-left: 1.4rem;
+    }
+    .problem-block p {
+      font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+      color: var(--mud);
+      margin-bottom: 1rem;
+    }
+    .problem-block p:last-child { margin-bottom: 0; }
+    .highlight {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--soil);
+    }
+
+    /* ── STEP HEADING ── */
+    .step-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+      font-weight: 700;
+      color: var(--mud);
+    }
+
+    /* ── CASE SCENARIOS ── */
+    .case-desc {
+      font-size: clamp(0.9rem, 2.5vw, 1.02rem);
+      color: var(--mud);
+      margin: 0.9rem 0 1.1rem;
+      line-height: 1.6;
+    }
+    .case-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--straw);
+      margin: 1.1rem 0 0.5rem;
+    }
+    .case-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 0.4rem;
+    }
+    .case-list li {
+      position: relative;
+      padding-left: 1.1rem;
+      font-size: 0.92rem;
+      color: var(--soil);
+      margin-bottom: 0.4rem;
+    }
+    .case-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--straw);
+    }
+
+    /* ── IMAGE ROW ── */
+    .image-row {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 var(--px) 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+    .img-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+    .img-wrap {
+      background: var(--haze);
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .img-wrap--portrait { aspect-ratio: 3/4; }
+    .img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .img-wrap video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    figcaption {
+      font-size: clamp(0.68rem, 2vw, 0.75rem);
+      color: var(--soil);
+      line-height: 1.45;
+    }
+    .fig-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--straw);
+      letter-spacing: 0.1em;
+      margin-right: 0.35rem;
+    }
+    .reel-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--straw);
+      text-decoration: none;
+      margin-top: 0.2rem;
+      opacity: 0.75;
+    }
+    .reel-link svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .reel-link:hover { opacity: 1; text-decoration: underline; }
+    .ref-box {
+      margin-top: 0.7rem;
+      padding: 0.55rem 0.75rem;
+      border-left: 2px solid var(--straw);
+      background: var(--haze);
+      border-radius: 2px;
+      font-size: 0.7rem;
+      color: var(--soil);
+      line-height: 1.5;
+    }
+    .ref-box a {
+      color: #2E7DD1;
+      text-decoration: none;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.66rem;
+    }
+    .ref-box a:hover { text-decoration: underline; }
+    .ref-highlight {
+      color: var(--straw);
+      font-weight: 600;
+    }
+
+    /* ── PARAMS GRID ── */
+    .params-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .param-group-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--straw);
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.45rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .param-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--rule);
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .param-name {
+      font-size: clamp(0.72rem, 2vw, 0.82rem);
+      color: var(--soil);
+      flex: 1 1 auto;
+    }
+    .param-val {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: clamp(0.72rem, 2vw, 0.82rem);
+      font-weight: 500;
+      color: var(--mud);
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .param-src {
+      font-size: 0.62rem;
+      font-weight: 400;
+      color: var(--straw);
+    }
+
+    /* ── NOTES ── */
+    .param-note {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--straw);
+      letter-spacing: 0.04em;
+      padding: 0.3rem 0 0.4rem;
+    }
+    .param-note.wb-note {
+      white-space: normal;
+      line-height: 1.6;
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(0.7rem, 2vw, 0.75rem);
+      color: var(--soil);
+      letter-spacing: 0;
+      border-left: 2px solid var(--rule);
+      padding: 0.6rem 0.8rem;
+      margin: 0.25rem 0 0.5rem;
+      background: var(--haze);
+      border-radius: 2px;
+    }
+    .param-note.wb-note img {
+      width: 100%;
+      max-width: 280px;
+      border-radius: 3px;
+      margin-bottom: 0.45rem;
+      display: block;
+      border: 1px solid var(--rule);
+    }
+    .param-note.wb-note strong {
+      font-weight: 500;
+      color: var(--mud);
+    }
+    .param-note.cg-note {
+      white-space: normal;
+      line-height: 1.6;
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(0.7rem, 2vw, 0.75rem);
+      color: var(--haze);
+      letter-spacing: 0;
+      border-left: 3px solid var(--straw);
+      padding: 0.7rem 0.9rem;
+      margin: 0.25rem 0 0.5rem;
+      background: var(--soil);
+      border-radius: 2px;
+    }
+
+    /* ── SVG SKETCH ── */
+    .sketch-wrap {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 var(--px) 4rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .sketch-wrap svg {
+      opacity: 0.22;
+      max-width: 100%;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 1.4rem var(--px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    footer span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: clamp(0.52rem, 1.8vw, 0.62rem);
+      letter-spacing: 0.08em;
+      color: var(--mud);
+      opacity: 0.4;
+    }
+
+    /* ── FIG BLOCK (image + data side by side) ── */
+    .fig-block {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 var(--px) 2.8rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.6rem;
+      align-items: start;
+    }
+    .img-card--wide { width: 100%; }
+    .img-wrap--wide {
+      aspect-ratio: 16/7;
+    }
+
+    @media (max-width: 560px) {
+      .fig-block { grid-template-columns: 1fr; }
+      .image-row    { grid-template-columns: 1fr; }
+      .params-grid  { grid-template-columns: 1fr; gap: 1.4rem; }
+      .study-title br { display: none; }
+      .study-subtitle br { display: none; }
+    }
+    .img-wrap { cursor: zoom-in; }
+    .param-note.wb-note img { cursor: zoom-in; }
+
+    /* ── GALLERY VIEWER ── */
+    .gallery-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #0a0a0a;
+      flex-direction: column;
+    }
+    .gallery-overlay.active { display: flex; }
+
+    .gallery-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.2rem;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 10;
+    }
+    .gallery-counter {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.12em;
+      min-width: 3rem;
+    }
+    .gallery-title-text {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.8);
+      letter-spacing: 0.06em;
+      text-align: center;
+      flex: 1;
+      padding: 0 0.8rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .gallery-close {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.8);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.1rem 0.3rem;
+      line-height: 1;
+      min-width: 3rem;
+      text-align: right;
+      transition: color 0.15s;
+    }
+    .gallery-close:hover { color: #fff; }
+
+    .gallery-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding-top: 3.2rem;
+      padding-bottom: 7.5rem;
+      overflow: hidden;
+    }
+    .gallery-img-wrap {
+      max-width: 94vw;
+      max-height: 100%;
+      overflow: auto;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      scrollbar-width: none;
+    }
+    .gallery-img-wrap::-webkit-scrollbar { display: none; }
+    .gallery-img-wrap:active { cursor: grabbing; }
+    .gallery-img-wrap img {
+      max-width: 90vw;
+      max-height: 68vh;
+      object-fit: contain;
+      display: block;
+      border-radius: 3px;
+      user-select: none;
+      -webkit-user-drag: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .gallery-img-wrap img.fading {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    .gallery-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: #fff;
+      width: 2.6rem;
+      height: 2.6rem;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+      transition: background 0.18s;
+      backdrop-filter: blur(4px);
+    }
+    .gallery-arrow:hover { background: rgba(255,255,255,0.18); }
+    .gallery-arrow[disabled] { opacity: 0.15; pointer-events: none; }
+    .gallery-arrow.prev { left: 0.8rem; }
+    .gallery-arrow.next { right: 0.8rem; }
+
+    .gallery-bottom {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 0.55rem 0.8rem 0.7rem;
+    }
+    .gallery-dots {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 0.55rem;
+    }
+    .gallery-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transition: background 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .gallery-dot.active { background: #C9A84C; transform: scale(1.35); }
+    .gallery-strip {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 0 0.2rem;
+    }
+    .gallery-strip::-webkit-scrollbar { display: none; }
+    .gallery-thumb {
+      flex-shrink: 0;
+      width: 54px; height: 54px;
+      border-radius: 5px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      opacity: 0.45;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+    .gallery-thumb.active { border-color: #C9A84C; opacity: 1; }
+    .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    @media (max-width: 480px) {
+      .gallery-arrow { width: 2rem; height: 2rem; font-size: 0.95rem; }
+      .gallery-thumb { width: 44px; height: 44px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="topbar-label">Static Mechanics · Field Observation</span>
+    <span class="topbar-tag">2025</span>
+  </div>
+
+  <div class="hero">
+    <p class="eyebrow">Study — Front Axle Load Analysis</p>
+    <h1 class="study-title">Why Does a Tractor's Front Lift<br>at the Bund?</h1>
+    <p class="study-subtitle">A simplified static model of rear-implement tractor behaviour<br>during irrigation bund crossing</p>
+    <div class="rule"></div>
+  </div>
+
+  <div class="section">
+    <p class="section-label">Problem Statement</p>
+    <div class="problem-block">
+      <p>
+        A rear-mounted implement tractor moves normally across a paddy field under working load.
+        But the moment its rear tyres climb over the irrigation bund at the field boundary,
+        the front of the tractor becomes visibly light — sometimes lifting entirely off the ground.
+      </p>
+      <p>
+        <span class="highlight">The implement weight does not change. The tractor weight does not change.</span>
+        Yet the front axle reaction drops sharply at that instant.
+      </p>
+      <p>
+        This study asks a simple question: what changes at that exact moment?
+        Using moment equilibrium on a simplified static model, it investigates how a shift
+        in the rear tyre contact point — from field level to bund-top — alters the load
+        distribution across the tractor's axles.
+      </p>
+    </div>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- Field reel — real-world observation (two passes) -->
+  <div class="section" style="padding-bottom: 0.6rem;">
+    <p class="section-label">Field Note</p>
+    <p style="max-width:780px; margin:0 auto; padding:0 var(--px) 1rem; font-size:0.92rem; color:var(--mud);">
+      Not a one-off — seen across tractors. Study model uses a third, the Mahindra 265 DI.
+    </p>
+  </div>
+  <div class="image-row">
+    <figure class="img-card">
+      <div class="img-wrap">
+        <video src="reel_observation.mp4" autoplay loop muted playsinline></video>
+      </div>
+      <figcaption><span class="fig-label">Pass 1</span>Swaraj 855
+        <a class="reel-link" href="https://www.instagram.com/p/DaAtiu3lmwy/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none">
+            <defs>
+              <linearGradient id="igGrad1" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FEDA75"/>
+                <stop offset="25%" stop-color="#FA7E1E"/>
+                <stop offset="50%" stop-color="#D62976"/>
+                <stop offset="75%" stop-color="#962FBF"/>
+                <stop offset="100%" stop-color="#4F5BD5"/>
+              </linearGradient>
+            </defs>
+            <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="url(#igGrad1)" stroke-width="1.8"/>
+            <circle cx="12" cy="12" r="4.3" stroke="url(#igGrad1)" stroke-width="1.8"/>
+            <circle cx="17.3" cy="6.7" r="1.1" fill="url(#igGrad1)"/>
+          </svg>
+          View reel ↗
+        </a>
+      </figcaption>
+    </figure>
+    <figure class="img-card">
+      <div class="img-wrap">
+        <video src="reel_observation2.mp4" autoplay loop muted playsinline></video>
+      </div>
+      <figcaption><span class="fig-label">Pass 2</span>International
+        <a class="reel-link" href="https://www.instagram.com/p/DaPdvB9RRoL/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none">
+            <defs>
+              <linearGradient id="igGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FEDA75"/>
+                <stop offset="25%" stop-color="#FA7E1E"/>
+                <stop offset="50%" stop-color="#D62976"/>
+                <stop offset="75%" stop-color="#962FBF"/>
+                <stop offset="100%" stop-color="#4F5BD5"/>
+              </linearGradient>
+            </defs>
+            <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="url(#igGrad2)" stroke-width="1.8"/>
+            <circle cx="12" cy="12" r="4.3" stroke="url(#igGrad2)" stroke-width="1.8"/>
+            <circle cx="17.3" cy="6.7" r="1.1" fill="url(#igGrad2)"/>
+          </svg>
+          View reel ↗
+        </a>
+      </figcaption>
+    </figure>
+    <figure class="img-card">
+      <div class="img-wrap">
+        <video src="reel_observation3.mp4" autoplay loop muted playsinline></video>
+      </div>
+      <figcaption><span class="fig-label">Pass 3</span>New Holland 3630
+        <a class="reel-link" href="https://www.instagram.com/reel/DaPQWtzNrES/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none">
+            <defs>
+              <linearGradient id="igGrad3" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FEDA75"/>
+                <stop offset="25%" stop-color="#FA7E1E"/>
+                <stop offset="50%" stop-color="#D62976"/>
+                <stop offset="75%" stop-color="#962FBF"/>
+                <stop offset="100%" stop-color="#4F5BD5"/>
+              </linearGradient>
+            </defs>
+            <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="url(#igGrad3)" stroke-width="1.8"/>
+            <circle cx="12" cy="12" r="4.3" stroke="url(#igGrad3)" stroke-width="1.8"/>
+            <circle cx="17.3" cy="6.7" r="1.1" fill="url(#igGrad3)"/>
+          </svg>
+          View reel ↗
+        </a>
+      </figcaption>
+    </figure>
+    <figure class="img-card">
+      <div class="img-wrap">
+        <video src="reel_observation4.mp4" autoplay loop muted playsinline></video>
+      </div>
+      <figcaption><span class="fig-label">Pass 4</span>Swaraj 855 FE 4x4
+        <a class="reel-link" href="https://www.instagram.com/reel/DQVpGjLEuhJ/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none">
+            <defs>
+              <linearGradient id="igGrad4" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FEDA75"/>
+                <stop offset="25%" stop-color="#FA7E1E"/>
+                <stop offset="50%" stop-color="#D62976"/>
+                <stop offset="75%" stop-color="#962FBF"/>
+                <stop offset="100%" stop-color="#4F5BD5"/>
+              </linearGradient>
+            </defs>
+            <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="url(#igGrad4)" stroke-width="1.8"/>
+            <circle cx="12" cy="12" r="4.3" stroke="url(#igGrad4)" stroke-width="1.8"/>
+            <circle cx="17.3" cy="6.7" r="1.1" fill="url(#igGrad4)"/>
+          </svg>
+          View reel ↗
+        </a>
+      </figcaption>
+    </figure>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- STEP 1 -->
+  <div class="section" style="padding-bottom: 1.5rem;">
+    <p class="section-label">Step 1 — Model Setup</p>
+    <h2 class="step-heading">Geometry &amp; Mass Properties</h2>
+  </div>
+
+  <!-- Fig 1 + Tractor params -->
+  <div class="fig-block">
+    <figure class="img-card img-card--wide">
+      <div class="img-wrap">
+        <img src="Model Used 265.png" alt="Mahindra 265 replica model" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 1</span>
+        Tractor replica — reverse engineered from Mahindra 265
+      </figcaption>
+      <div class="ref-box">
+        Geometry for this replica (wheelbase, KPI, camber, scrub radius) comes from a separate
+        <span class="ref-highlight">reverse-engineering study</span> using measured field data.
+        <br><a href="https://www.linkedin.com/posts/arpit-malik-bb6939303_vehicledynamics-steeringgeometry-reverseengineering-ugcPost-7469405123719417856-YUJ8/" target="_blank" rel="noopener noreferrer">View study on LinkedIn ↗</a>
+      </div>
+    </figure>
+    <div class="param-group">
+      <p class="param-group-title">Tractor</p>
+      <div class="param-row">
+        <span class="param-name">Model reference</span>
+        <span class="param-val">Mahindra 265 DI</span>
+      </div>
+      <div class="param-row">
+        <span class="param-name">Wheelbase (replica)</span>
+        <span class="param-val">1880 mm</span>
+      </div>
+      <div class="param-row">
+        <span class="param-name">CG — longitudinal</span>
+        <span class="param-val">40% of WB from rear axle <span class="param-src">(assumed)</span></span>
+      </div>
+      <div class="param-row">
+        <span class="param-name">CG height</span>
+        <span class="param-val">750 mm <span class="param-src">(assumed)</span></span>
+      </div>
+      <div class="param-note cg-note">
+        In a 4×2 tractor, the gearbox and differential sit rearward, rear tyres are larger and heavier,
+        and the engine is not fully forward — making the rear end heavier than the front.
+        CG is therefore assumed closer to the rear axle.
+      </div>
+    </div>
+  </div>
+
+  <!-- Fig 2 + Rotavator params -->
+  <div class="fig-block">
+    <figure class="img-card img-card--wide">
+      <div class="img-wrap">
+        <img src="Rotavator.png" alt="Rotavator CAD model" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 2</span>
+        Rotavator — CAD model
+      </figcaption>
+    </figure>
+    <div class="param-group">
+      <p class="param-group-title">Rotavator (Implement)</p>
+      <div class="param-row">
+        <span class="param-name">Weight</span>
+        <span class="param-val">201 kg <span class="param-src">(Indiamart)</span></span>
+      </div>
+      <div class="param-row">
+        <span class="param-name">Width</span>
+        <span class="param-val">4 ft <span class="param-src">(30 HP class)</span></span>
+      </div>
+      <div class="param-row">
+        <span class="param-name">CG</span>
+        <span class="param-val">Geometric centre <span class="param-src">(assumed)</span></span>
+      </div>
+      <div class="param-note wb-note">
+        <img src="Rotavator_Indiamart2.png" alt="Indiamart listing showing 4 ft, 201 kg rotavator spec for 30 HP tractors" />
+        Spec sheet — 4 ft rotavator, 201 kg, rated for 30 HP tractors (Indiamart).
+      </div>
+    </div>
+  </div>
+
+  <!-- Fig 3 — Assembly (full width) -->
+  <div class="section" style="padding-bottom: 1rem;">
+    <figure class="img-card">
+      <div class="img-wrap img-wrap--wide">
+        <img src="Tractor+Rotavator_ASM.png" alt="Tractor and rotavator linkage assembly" />
+      </div>
+      <figcaption style="margin-top:0.6rem;">
+        <span class="fig-label">Fig 3</span>
+        Tractor + Rotavator — realistic linkage assembly
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Fig 4 + Wheelbase verification -->
+  <div class="fig-block">
+    <figure class="img-card img-card--wide">
+      <div class="img-wrap">
+        <img src="CG and wheel base.png" alt="CG location and wheelbase measurement in CAD" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 4</span>
+        CG location &amp; wheelbase measurement in CAD
+      </figcaption>
+    </figure>
+    <div class="param-group">
+      <p class="param-group-title">Wheelbase Verification</p>
+      <div class="param-row">
+        <span class="param-name">Reference (tractorguru.in)</span>
+        <span class="param-val">1830 mm</span>
+      </div>
+      <div class="param-row">
+        <span class="param-name">Replica (CAD)</span>
+        <span class="param-val">1880 mm</span>
+      </div>
+      <div class="param-row">
+        <span class="param-name">Deviation</span>
+        <span class="param-val">50 mm</span>
+      </div>
+      <div class="param-note wb-note">
+        <img src="wheel base google.png" alt="Google reference showing 1830 mm wheelbase" />
+        Deviation of 50 mm accepted for this simplified static study.
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- STEP 2 — CASE 1 -->
+  <div class="section" style="padding-bottom: 1.5rem;">
+    <p class="section-label">Step 2 — Loading Scenarios</p>
+    <h2 class="step-heading">Case 1 — Tyres on Split Surface</h2>
+    <p class="case-desc">
+      Front tyres rest on the higher field surface while the rear tyres remain
+      inside the paddy field.
+    </p>
+
+    <figure class="img-card img-card--wide" style="margin-bottom: 1.2rem;">
+      <div class="img-wrap img-wrap--wide">
+        <img src="case_1_Scenerio.png" alt="Case 1 — front tyres on higher field surface, rear tyres in paddy field" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 5</span>
+        Case 1 — front tyres elevated, rear tyres in field
+      </figcaption>
+    </figure>
+
+    <p class="case-tag">Determine</p>
+    <ul class="case-list">
+      <li>Support reactions</li>
+      <li>Front axle load</li>
+    </ul>
+
+    <p class="case-tag" style="margin-top: 1.6rem;">Moment Equilibrium — About Contact Patch</p>
+
+    <figure class="img-card img-card--wide" style="margin-bottom: 1.2rem;">
+      <div class="img-wrap img-wrap--wide">
+        <img src="Case 1 Moment_Solving.png" alt="Case 1 — moment solving about the contact patch: tractor CG, implement CG, and front axle reaction" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 6</span>
+        Moment solving about the contact patch — tractor CG, implement CG, front axle reaction (N<sub>f</sub>)
+      </figcaption>
+    </figure>
+
+    <div class="image-row" style="max-width:480px; padding:0; margin:0 auto 1.2rem;">
+      <figure class="img-card">
+        <div class="img-wrap img-wrap--portrait">
+          <img src="Case 1 Nf Calculation Page 1.png" alt="Case 1 — handwritten calculation of front axle reaction Nf, page 1" />
+        </div>
+        <figcaption><span class="fig-label">Fig 7</span>Calculation — N<sub>f</sub> (page 1 of 2)</figcaption>
+      </figure>
+      <figure class="img-card">
+        <div class="img-wrap img-wrap--portrait">
+          <img src="Case 1 Nf Calculation Page 2.png" alt="Case 1 — handwritten calculation of front axle reaction Nf, page 2" />
+        </div>
+        <figcaption><span class="fig-label">Fig 8</span>Calculation — N<sub>f</sub> (page 2 of 2)</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- STEP 2 — CASE 2 -->
+  <div class="section" style="padding-bottom: 1.5rem;">
+    <p class="section-label">Step 2 — Loading Scenarios</p>
+    <h2 class="step-heading">Case 2 — Rear Tyres on Split Surface</h2>
+    <p class="case-desc">
+      Rear tyres rest on the higher field surface while the front tyres remain
+      inside the paddy field.
+    </p>
+
+    <figure class="img-card img-card--wide" style="margin-bottom: 1.2rem;">
+      <div class="img-wrap img-wrap--wide">
+        <img src="case_2_Scenerio.png" alt="Case 2 — rear tyres on higher field surface, front tyres in paddy field" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 9</span>
+        Case 2 — rear tyres elevated, front tyres in field
+      </figcaption>
+    </figure>
+
+    <p class="case-tag">Determine</p>
+    <ul class="case-list">
+      <li>Support reactions</li>
+      <li>Front axle load</li>
+    </ul>
+
+    <p class="case-tag" style="margin-top: 1.6rem;">Moment Equilibrium — About Contact Patch</p>
+
+    <figure class="img-card img-card--wide" style="margin-bottom: 1.2rem;">
+      <div class="img-wrap img-wrap--wide">
+        <img src="Case 2 Moment_Solving.png" alt="Case 2 — moment solving about the contact patch: tractor CG, implement CG, and front axle reaction" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 10</span>
+        Moment solving about the contact patch — tractor CG, implement CG, front axle reaction (N<sub>f</sub>)
+      </figcaption>
+    </figure>
+
+    <div class="image-row" style="max-width:480px; padding:0; margin:0 auto 1.2rem; grid-template-columns: 1fr;">
+      <figure class="img-card">
+        <div class="img-wrap img-wrap--portrait">
+          <img src="Case 2 Nf Calculation Page 1.png" alt="Case 2 — handwritten calculation of front axle reaction Nf, page 1" />
+        </div>
+        <figcaption><span class="fig-label">Fig 11</span>Calculation — N<sub>f</sub></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- COMPARISON — CASE 1 VS CASE 2 -->
+  <div class="section" style="padding-bottom: 1.5rem;">
+    <p class="section-label">Comparison</p>
+    <h2 class="step-heading">Case 1 vs Case 2 — Front Axle Load</h2>
+    <p class="case-desc">
+      Shifting the rear support point from field level (Case 1) to the bund-top
+      (Case 2) moves the rear contact point forward, reducing the restoring moment
+      and sharply cutting the front axle reaction.
+    </p>
+
+    <figure class="img-card img-card--wide" style="margin-bottom: 1.2rem;">
+      <div class="img-wrap img-wrap--wide">
+        <img src="Case 1 vs Case 2.png" alt="Comparison of front axle load between Case 1 (front on higher ground) and Case 2 (rear on irrigation bund)" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 12</span>
+        Front axle load comparison — Case 1 vs Case 2
+      </figcaption>
+    </figure>
+
+    <div style="margin: 1.4rem 0 1.8rem;">
+      <div style="border: 1px solid var(--rule); border-radius: 3px; overflow: hidden;">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; background:var(--haze); border-bottom:1px solid var(--rule);">
+          <div style="padding:0.6rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--straw);">Parameter</div>
+          <div style="padding:0.6rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--straw); border-left:1px solid var(--rule);">Case 1</div>
+          <div style="padding:0.6rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--straw); border-left:1px solid var(--rule);">Case 2</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; border-bottom:1px solid var(--rule);">
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--soil);">Rear tyre position</div>
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--mud); border-left:1px solid var(--rule);">Field level</div>
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--mud); border-left:1px solid var(--rule);">Irrigation bund</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; border-bottom:1px solid var(--rule);">
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--soil);">Rear support point</div>
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--mud); border-left:1px solid var(--rule);">Original</div>
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--mud); border-left:1px solid var(--rule);">Shifted 421 mm forward</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; border-bottom:1px solid var(--rule);">
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--soil);">Front axle load</div>
+          <div style="padding:0.65rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.88rem; font-weight:500; color:var(--mud); border-left:1px solid var(--rule);">5807 N (592 kg)</div>
+          <div style="padding:0.65rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.88rem; font-weight:500; color:var(--mud); border-left:1px solid var(--rule);">1937 N (197 kg)</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr;">
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--soil);">Change in front axle load</div>
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--mud); border-left:1px solid var(--rule);">—</div>
+          <div style="padding:0.65rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.88rem; font-weight:500; color:#b03a2e; border-left:1px solid var(--rule);">↓ 66.6%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- REMEDY -->
+  <div class="section" style="padding-bottom: 2rem;">
+    <p class="section-label">Remedy</p>
+    <h2 class="step-heading">Adding Front Ballast to the Tractor</h2>
+    <p class="case-desc">
+      Adding front ballast shifts the combined center of gravity forward, increasing the restoring
+      moment about the rear support point. This increases the front axle load, improving steering
+      stability and reducing the tendency of the tractor's front end to lift.
+    </p>
+
+    <p class="case-tag" style="margin-top: 1.6rem;">Front Ballast in the Field</p>
+    <p style="max-width:780px; margin:0 0 1rem; font-size:0.92rem; color:var(--mud);">
+      Front ballast is added weight — usually cast iron blocks — bolted onto the front axle
+      carrier ahead of the front wheels, as you can see in the GIF below. It counteracts the
+      weight transfer caused by a heavy rear-mounted implement, keeping enough load on the
+      front axle for steering control and stability.
+    </p>
+  </div>
+
+  <div class="image-row">
+    <figure class="img-card">
+      <div class="img-wrap">
+        <video src="Front_Ballast_JohnDeer.mp4" autoplay loop muted playsinline></video>
+      </div>
+      <figcaption><span class="fig-label">Ref 1</span>John Deere — front ballast with plough</figcaption>
+    </figure>
+    <figure class="img-card">
+      <div class="img-wrap">
+        <video src="Front_Ballast_MasseyFurgusan.mp4" autoplay loop muted playsinline></video>
+      </div>
+      <figcaption><span class="fig-label">Ref 2</span>Massey Ferguson — front ballast with Super Seeder</figcaption>
+    </figure>
+  </div>
+
+  <div class="section" style="padding-bottom: 2rem;">
+    <p class="case-tag" style="margin-top: 1.6rem;">Verification Workflow</p>
+    <ol class="case-list" style="list-style:none; counter-reset: remedy-counter;">
+      <li style="counter-increment: remedy-counter; padding-left:1.8rem; position:relative; margin-bottom:0.7rem;">
+        <span style="position:absolute; left:0; font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--straw);">01</span>
+        Create the front ballast CAD model along with the axle-mounted support bracket — on the Mahindra 265, front weights are supported by the front axle carrier rather than the chassis — and assign the actual material to obtain a realistic ballast mass.
+      </li>
+    </ol>
+
+    <figure class="img-card img-card--wide" style="margin-bottom: 1.6rem;">
+      <div class="img-wrap img-wrap--wide">
+        <img src="ballast_assembly.png" alt="Assembled front ballast CAD model mounted on the Mahindra 265 front axle carrier" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 13</span>
+        Assembled front ballast with axle-mounted support bracket
+      </figcaption>
+    </figure>
+
+    <ol class="case-list" style="list-style:none; counter-reset: remedy-counter 1;">
+      <li style="counter-increment: remedy-counter; padding-left:1.8rem; position:relative; margin-bottom:0.7rem;">
+        <span style="position:absolute; left:0; font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--straw);">02</span>
+        Obtain the ballast CG from CAD.
+      </li>
+    </ol>
+
+    <figure class="img-card img-card--wide" style="margin-bottom: 1.6rem;">
+      <div class="img-wrap img-wrap--wide">
+        <img src="ballast_cg_mass_property.png" alt="Mass properties output from CAD showing ballast center of gravity coordinates" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 14</span>
+        Ballast CG obtained via mass properties in CAD
+      </figcaption>
+    </figure>
+
+    <ol class="case-list" style="list-style:none; counter-reset: remedy-counter 2;">
+      <li style="counter-increment: remedy-counter; padding-left:1.8rem; position:relative; margin-bottom:0.7rem;">
+        <span style="position:absolute; left:0; font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--straw);">03</span>
+        Calculate the combined CG of the tractor and front ballast.
+      </li>
+    </ol>
+
+    <div class="image-row" style="padding:0; margin:0 auto 1.6rem;">
+      <figure class="img-card">
+        <div class="img-wrap">
+          <img src="combined_cg_cad.png" alt="Tractor CAD side view showing CG shift with lines indicating original and new combined CG position after front ballast" />
+        </div>
+        <figcaption>
+          <span class="fig-label">Fig 15</span>
+          CG shift illustrated on tractor CAD — before and after front ballast
+        </figcaption>
+      </figure>
+      <figure class="img-card">
+        <div class="img-wrap">
+          <img src="combined_cg_calculation.png" alt="Handwritten calculation of combined CG for tractor with front ballast" />
+        </div>
+        <figcaption>
+          <span class="fig-label">Fig 16</span>
+          Combined CG hand calculation — tractor + front ballast
+        </figcaption>
+      </figure>
+    </div>
+
+    <ol class="case-list" style="list-style:none; counter-reset: remedy-counter 3;">
+      <li style="counter-increment: remedy-counter; padding-left:1.8rem; position:relative; margin-bottom:0.7rem;">
+        <span style="position:absolute; left:0; font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--straw);">04</span>
+        Recalculate the front axle reaction for Case 2 using the new combined CG.
+      </li>
+    </ol>
+
+    <figure class="img-card img-card--wide" style="margin-bottom: 1.6rem;">
+      <div class="img-wrap img-wrap--wide">
+        <img src="case2_ballast_nf_calculation.png" alt="Recalculated front axle reaction Nf for Case 2 with front ballast applied" />
+      </div>
+      <figcaption>
+        <span class="fig-label">Fig 17</span>
+        Front axle reaction (N<sub>f</sub>) — Case 2 with front ballast
+      </figcaption>
+    </figure>
+
+    <ol class="case-list" style="list-style:none; counter-reset: remedy-counter 4;">
+      <li style="counter-increment: remedy-counter; padding-left:1.8rem; position:relative; margin-bottom:0.7rem;">
+        <span style="position:absolute; left:0; font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--straw);">05</span>
+        Compare results with and without ballast.
+      </li>
+    </ol>
+
+    <!-- Results Table -->
+    <div style="margin: 1.4rem 0 1.8rem;">
+      <p class="case-tag" style="margin-top:0; margin-bottom:0.8rem;">Results — Case 2</p>
+      <div style="border: 1px solid var(--rule); border-radius: 3px; overflow: hidden;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; background:var(--haze); border-bottom:1px solid var(--rule);">
+          <div style="padding:0.6rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--straw);">Configuration</div>
+          <div style="padding:0.6rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--straw); border-left:1px solid var(--rule);">Front Axle Load</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--rule);">
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--soil);">Without ballast</div>
+          <div style="padding:0.65rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.88rem; color:var(--mud); border-left:1px solid var(--rule);">197 kg</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr;">
+          <div style="padding:0.65rem 0.9rem; font-size:0.88rem; color:var(--soil);">With 108 kg ballast</div>
+          <div style="padding:0.65rem 0.9rem; font-family:'IBM Plex Mono',monospace; font-size:0.88rem; font-weight:500; color:var(--mud); border-left:1px solid var(--rule);">502 kg</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Engineering Interpretation -->
+    <p class="case-tag" style="margin-top:0; margin-bottom:0.8rem;">Engineering Interpretation</p>
+    <ul class="case-list" style="margin-bottom:1.6rem;">
+      <li>Front ballast mass — <strong style="color:var(--mud); font-weight:500;">108 kg</strong></li>
+      <li>Front axle load increased from <strong style="color:var(--mud); font-weight:500;">197 kg</strong> to <strong style="color:var(--mud); font-weight:500;">502 kg</strong></li>
+      <li>Increase of <strong style="color:var(--mud); font-weight:500;">305 kg (≈ 155%)</strong></li>
+    </ul>
+
+    <!-- Conclusion -->
+    <div class="problem-block">
+      <p>
+        Adding a <span class="highlight">108 kg front ballast</span> increased the front axle load
+        from <span class="highlight">197 kg to 502 kg</span>, demonstrating how front ballast
+        restores steering axle load by shifting the combined center of gravity forward and
+        increasing the restoring moment.
+      </p>
+    </div>
+
+    <!-- Design Trade-off -->
+    <div style="margin-top:1.6rem; border-left:3px solid #b03a2e; padding-left:1.4rem; background:rgba(176,58,46,0.06); padding-top:0.9rem; padding-bottom:0.9rem; padding-right:1rem; border-radius:0 3px 3px 0;">
+      <p style="font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:#b03a2e; margin-bottom:0.55rem;">Design Trade-off</p>
+      <p style="font-size:clamp(0.88rem,2.5vw,1rem); color:#7b2d26; line-height:1.65;">
+        Front ballast improves front axle load and stability, but excessive ballast increases
+        steering effort, front tyre wear, and front axle loading. Therefore, ballast should be
+        <strong style="font-weight:500; color:#7b2d26;">optimized for the intended implement and operating conditions</strong>.
+      </p>
+    </div>
+    </ol>
+  </div>
+
+  <div class="sketch-wrap">
+    <svg width="280" height="80" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="62" x2="160" y2="62" stroke="#5C3D1E" stroke-width="2"/>
+      <polyline points="160,62 175,38 210,38" stroke="#5C3D1E" stroke-width="2" fill="none"/>
+      <line x1="210" y1="38" x2="280" y2="38" stroke="#5C3D1E" stroke-width="2"/>
+      <rect x="100" y="28" width="72" height="28" rx="3" stroke="#5C3D1E" stroke-width="1.5"/>
+      <rect x="140" y="16" width="28" height="18" rx="2" stroke="#5C3D1E" stroke-width="1.2"/>
+      <line x1="154" y1="16" x2="154" y2="8" stroke="#5C3D1E" stroke-width="1.2"/>
+      <circle cx="112" cy="62" r="10" stroke="#5C3D1E" stroke-width="1.4"/>
+      <circle cx="164" cy="56" r="12" stroke="#5C3D1E" stroke-width="1.4"/>
+      <rect x="168" y="46" width="30" height="14" rx="2" stroke="#5C3D1E" stroke-width="1.2"/>
+      <line x1="168" y1="53" x2="200" y2="53" stroke="#5C3D1E" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <footer>
+    <span>Static model · Simplified analysis · Dynamic effects excluded</span>
+    <span>Tractor–Implement System</span>
+  </footer>
+
+  <!-- GALLERY VIEWER -->
+  <div class="gallery-overlay" id="gallery">
+    <div class="gallery-topbar">
+      <span class="gallery-counter" id="g-counter"></span>
+      <span class="gallery-title-text" id="g-title"></span>
+      <button class="gallery-close" id="g-close">&#x2715;</button>
+    </div>
+    <div class="gallery-main">
+      <button class="gallery-arrow prev" id="g-prev">&#8249;</button>
+      <div class="gallery-img-wrap" id="g-img-wrap">
+        <img id="g-img" src="" alt="" />
+      </div>
+      <button class="gallery-arrow next" id="g-next">&#8250;</button>
+      <div class="gallery-bottom">
+        <div class="gallery-dots" id="g-dots"></div>
+        <div class="gallery-strip" id="g-strip"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      let images = [];
+      let current = 0;
+
+      function collectImages() {
+        images = [];
+        document.querySelectorAll('.img-wrap img, .param-note.wb-note img').forEach(img => {
+          const fig = img.closest('figure');
+          const caption = fig ? fig.querySelector('figcaption')?.textContent?.trim() : (img.alt || '');
+          const idx = images.length;
+          images.push({ src: img.src, caption: caption || img.alt || '' });
+          img.style.cursor = 'zoom-in';
+          img.addEventListener('click', () => open(idx));
+        });
+      }
+
+      function buildStrip() {
+        const strip = document.getElementById('g-strip');
+        const dots  = document.getElementById('g-dots');
+        strip.innerHTML = '';
+        dots.innerHTML  = '';
+        images.forEach((im, i) => {
+          const th = document.createElement('div');
+          th.className = 'gallery-thumb' + (i === current ? ' active' : '');
+          th.innerHTML = '<img src="' + im.src + '" alt="" />';
+          th.addEventListener('click', () => goTo(i));
+          strip.appendChild(th);
+
+          const dot = document.createElement('div');
+          dot.className = 'gallery-dot' + (i === current ? ' active' : '');
+          dot.addEventListener('click', () => goTo(i));
+          dots.appendChild(dot);
+        });
+      }
+
+      function updateUI() {
+        const img   = document.getElementById('g-img');
+        const title = document.getElementById('g-title');
+        const ctr   = document.getElementById('g-counter');
+        const prev  = document.getElementById('g-prev');
+        const next  = document.getElementById('g-next');
+
+        img.classList.add('fading');
+        setTimeout(() => {
+          img.src = images[current].src;
+          img.alt = images[current].caption;
+          img.classList.remove('fading');
+        }, 180);
+
+        title.textContent = images[current].caption;
+        ctr.textContent   = (current + 1) + ' / ' + images.length;
+        prev.disabled = current === 0;
+        next.disabled = current === images.length - 1;
+
+        document.querySelectorAll('.gallery-thumb').forEach((t, i) => t.classList.toggle('active', i === current));
+        document.querySelectorAll('.gallery-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+
+        // scroll active thumb into view
+        const strip = document.getElementById('g-strip');
+        const activeThumb = strip.children[current];
+        if (activeThumb) activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+
+      function goTo(i) {
+        current = Math.max(0, Math.min(i, images.length - 1));
+        updateUI();
+      }
+
+      function open(i) {
+        current = i;
+        buildStrip();
+        updateUI();
+        document.getElementById('gallery').classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function close() {
+        document.getElementById('gallery').classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      // Controls
+      document.getElementById('g-close').addEventListener('click', close);
+      document.getElementById('g-prev').addEventListener('click', () => goTo(current - 1));
+      document.getElementById('g-next').addEventListener('click', () => goTo(current + 1));
+      document.getElementById('gallery').addEventListener('click', e => {
+        if (e.target === document.getElementById('gallery')) close();
+      });
+      document.addEventListener('keydown', e => {
+        if (!document.getElementById('gallery').classList.contains('active')) return;
+        if (e.key === 'Escape')      close();
+        if (e.key === 'ArrowLeft')   goTo(current - 1);
+        if (e.key === 'ArrowRight')  goTo(current + 1);
+      });
+
+      // Swipe
+      let tx = 0;
+      const wrap = document.getElementById('g-img-wrap');
+      wrap.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+      wrap.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - tx;
+        if (Math.abs(dx) > 50) goTo(current + (dx < 0 ? 1 : -1));
+      });
+
+      // Drag to pan
+      let dragging = false, sx, sy, slx, sly;
+      wrap.addEventListener('mousedown', e => {
+        dragging = true; sx = e.pageX; sy = e.pageY;
+        slx = wrap.scrollLeft; sly = wrap.scrollTop;
+      });
+      document.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        wrap.scrollLeft = slx - (e.pageX - sx);
+        wrap.scrollTop  = sly - (e.pageY - sy);
+      });
+      document.addEventListener('mouseup', () => dragging = false);
+
+      document.addEventListener('DOMContentLoaded', collectImages);
+    })();
+  </script>
+
+</body>
+</html>
